@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import {
     StyleSheet,
     Text,
+    ScrollView,
     View,
     TextInput,
     Keyboard,
@@ -32,49 +33,47 @@ export default class App extends Component {
 
   render() {
     return (
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View style={styles.container}>
-          { this.state.error && 
-            <Error
-              error={this.state.error}
-              closeError={this.closeError.bind(this)}
+      <View style={styles.container}>
+        { this.state.error && 
+          <Error
+            error={this.state.error}
+            closeError={this.closeError.bind(this)}
+          />
+        }
+        { this.state.list &&
+          <View style={{ ...styles.fullWidth, alignItems: 'flexStart '}}>
+            <Button
+              title='Go back'
+              onPress={this.goBack.bind(this)}
             />
-          }
+          </View>
+        }
 
-          { this.state.list &&
-            <View style={{ ...styles.fullWidth, alignItems: 'flexStart '}}>
-              <Button
-                title='Go back'
-                onPress={this.goBack.bind(this)}
+        {
+          this.state.list ?
+            <View style={{ ...styles.listContainer, ...styles.fullWidth}}>
+              <List
+                addItem={this.addItem.bind(this)}
+                deleteList={this.deleteList.bind(this)}
+                list={this.state.list}
               />
-            </View>
-          }
+            </View> :
+            <View style={styles.fullWidth}>
+              <OpenList
+                style={styles.borderBottom}
+                openList={this.openList.bind(this)}
+              />
 
-          {
-            this.state.list ?
-              <View style={styles.fullWidth}>
-                <List
-                  addItem={this.addItem.bind(this)}
-                  list={this.state.list}
+              <Text style={titleStyle}>New list</Text>
+              <View style={{ alignItems: 'center' }}>
+                <Button
+                  title='Create new list'
+                  onPress={this.newList.bind(this)}
                 />
-              </View> :
-              <View style={styles.fullWidth}>
-                <OpenList
-                  style={styles.borderBottom}
-                  openList={this.openList.bind(this)}
-                />
-
-                <Text style={titleStyle}>New list</Text>
-                <View style={{ alignItems: 'center' }}>
-                  <Button
-                    title='Create new list'
-                    onPress={this.newList.bind(this)}
-                  />
-                </View>
               </View>
-          }
-        </View>
-      </TouchableWithoutFeedback>
+            </View>
+        }
+      </View>
     )
   }
 
@@ -127,6 +126,20 @@ export default class App extends Component {
       this.setState(state => ({ ...state, error: 'Network error '}))
     })
   }
+
+  deleteList() {
+    fetch(API + '/delete?' + queryString.stringify({ id: this.state.list.id }))
+      .then(async resp => {
+        if (resp.status === 200) {
+          this.goBack()
+        }
+        else {
+          this.setState(state => ({ ...state, error: 'Error deleting list.' }))
+        }
+      }).catch(err => {
+        this.setState(state => ({ ...state, error: 'Network error' }))
+      })
+  }
 }
 
 
@@ -134,9 +147,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    alignItems: 'center',
     padding: 5,
-    paddingTop: 50,
+    paddingTop: 70,
+    alignItems: 'center',
+  },
+  listContainer: {
+    flex: 1
+  },
+  contentContainer: {
   },
   fullWidth: {
     alignSelf: 'stretch',

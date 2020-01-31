@@ -32,8 +32,15 @@ export default function List(props) {
   return (
     <View style={styles.container}>
       <View style={spacingY}>
-        <Text style={titleStyle}>List ID</Text>
-        <View style={styles.listId}>
+        <View style={styles.row}>
+          <Text style={titleStyle}>List ID</Text>
+          <Button
+            title="Delete"
+            onPress={props.deleteList}
+            style={{ marginLeft: 5 }}
+          />
+        </View>
+        <View style={styles.row}>
           <Text style={{ fontSize: 16 }}>{list.id}</Text>
           <Button title="Copy" onPress={copyId} style={{ marginLeft: 5 }}/>
         </View>
@@ -70,13 +77,13 @@ const styles = {
     alignSelf: 'stretch',
     paddingLeft: 5,
     paddingRight: 5,
+    flex: 1,
   },
-  listId: {
+  row: {
     flexDirection: 'row',
     alignItems: 'center'
   },
   list: {
-
   },
   itemContainer: {
     borderRadius: 3,
