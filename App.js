@@ -84,31 +84,37 @@ export default class App extends Component {
     this.setState(state => ({ ...state, list: null }))
   }
 
+  networkError() {
+    this.setState(state => ({ ...state, error: 'Network error' }))
+  }
+  serverError() {
+    this.setState(state => ({ ...state, error: 'Network error' }))
+  }
+  notFound() {
+    this.goBack()
+    this.setState(state => ({ ...state, error: 'List not found' }))
+  }
+
   openList(id) {
     fetch(API + '/list?' + queryString.stringify({ id })).then(async resp => {
       if (resp.status === 200) {
         const list = await resp.json()
         this.setState(state => ({ ...state, list, }))
-      }
-      else {
-        this.setState(state => ({ ...state, error: 'List not found' }))
-      }
-    }).catch(err => {
-      this.setState(state => ({ ...state, error: 'Network error' }))
-    })
+      } else if (resp.status === 404) this.notFound()
+      else this.serverError()
+    }).catch(this.networkError)
   }
   newList() {
     fetch(API + '/new-list').then(async resp => {
-      const id = await resp.text()
-      const list = {
-        id,
-        items: [],
-        expires: Date.now() + LIFETIME
-      }
-      this.setState(state => ({ ...state, list, }))
-    }).catch(err => {
-      this.setState(state => ({ ...state, error: 'Network error' }))
-    })
+      if (resp.status === 200) {
+        const id = await resp.text()
+        const list = {
+          id,
+          items: [],
+        }
+        this.setState(state => ({ ...state, list, }))
+      } else this.serverError()
+    }).catch(this.networkError)
   }
 
   addItem(item) {
@@ -121,24 +127,17 @@ export default class App extends Component {
       if (resp.status === 200) {
         const list = await resp.json()
         this.setState(state => ({ ...state, list, }))
-      } else this.setState(state => ({ ...state, error: 'Server error '}))
-    }).catch(err => {
-      this.setState(state => ({ ...state, error: 'Network error '}))
-    })
+      } else if (resp.status === 404) this.notFound()
+      else this.serverError() 
+    }).catch(this.networkError)
   }
 
   deleteList() {
     fetch(API + '/delete?' + queryString.stringify({ id: this.state.list.id }))
       .then(async resp => {
-        if (resp.status === 200) {
-          this.goBack()
-        }
-        else {
-          this.setState(state => ({ ...state, error: 'Error deleting list.' }))
-        }
-      }).catch(err => {
-        this.setState(state => ({ ...state, error: 'Network error' }))
-      })
+        if (resp.status === 200) this.goBack()
+        else this.serverError()
+      }).catch(this.networkError)
   }
 }
 

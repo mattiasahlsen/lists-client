@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "snaplist",
-    "slug": "snaplist",
+    "name": "snaplists",
+    "slug": "snaplists",
     "privacy": "public",
     "sdkVersion": "36.0.0",
     "platforms": [
@@ -14,8 +14,8 @@
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "resizeMode": "cover",
+      "backgroundColor": "#E5F4FF"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -25,11 +25,11 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "mattiasahlsen.snaplist",
+      "bundleIdentifier": "mattiasahlsen.snaplists",
       "buildNumber": "1.0.0"
     },
     "android": {
-      "package": "mattiasahlsen.snaplist",
+      "package": "mattiasahlsen.snaplists",
       "versionCode": 1
     }
   }
