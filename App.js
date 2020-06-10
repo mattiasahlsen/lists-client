@@ -99,6 +99,7 @@ export default class App extends Component {
     fetch(API + '/list?' + queryString.stringify({ id })).then(async resp => {
       if (resp.status === 200) {
         const list = await resp.json()
+        list.expires = new Date(list.expires * 1000)
         this.setState(state => ({ ...state, list, }))
       } else if (resp.status === 404) this.notFound()
       else this.serverError()
@@ -107,11 +108,8 @@ export default class App extends Component {
   newList() {
     fetch(API + '/new-list').then(async resp => {
       if (resp.status === 200) {
-        const id = await resp.text()
-        const list = {
-          id,
-          items: [],
-        }
+        const list = await resp.json()
+        list.expires = new Date(list.expires * 1000)
         this.setState(state => ({ ...state, list, }))
       } else this.serverError()
     }).catch(this.networkError)
@@ -126,6 +124,7 @@ export default class App extends Component {
     }).then(async resp => {
       if (resp.status === 200) {
         const list = await resp.json()
+        list.expires = new Date(list.expires * 1000)
         this.setState(state => ({ ...state, list, }))
       } else if (resp.status === 404) this.notFound()
       else this.serverError() 
@@ -135,7 +134,8 @@ export default class App extends Component {
   deleteList() {
     fetch(API + '/delete?' + queryString.stringify({ id: this.state.list.id }))
       .then(async resp => {
-        if (resp.status === 200) this.goBack()
+        if (resp.status === 200) return this.goBack()
+        else if (resp.status === 404) return this.notFound()
         else this.serverError()
       }).catch(this.networkError)
   }

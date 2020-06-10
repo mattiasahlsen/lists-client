@@ -29,6 +29,16 @@ export default function List(props) {
     Clipboard.setString(props.list.id)
   }
 
+  const timeLeft = expires => {
+      const msLeft = expires.getTime() - Date.now()
+      const minutesLeft = msLeft / 1000 / 60
+      const hoursLeft = minutesLeft / 60
+      return Math.floor(hoursLeft) + 'h ' + Math.floor(minutesLeft % 60) + 'm'
+  }
+  const addZero = n => n < 10 ? '0' + n : n
+
+  const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']
+
   return (
     <View style={styles.container}>
       <View style={spacingY}>
@@ -43,6 +53,14 @@ export default function List(props) {
         <View style={styles.row}>
           <Text style={{ fontSize: 16 }}>{list.id}</Text>
           <Button title="Copy" onPress={copyId} style={{ marginLeft: 5 }}/>
+        </View>
+        <View style={styles.row}>
+          <Text style={titleStyle}>Expires</Text>
+          <Text style={{ fontSize: 16, marginLeft: 5 }}>
+            {days[list.expires.getDay()] + ' '}
+            {addZero(list.expires.getHours())}:
+            {addZero(list.expires.getMinutes())}
+          </Text>
         </View>
       </View>
 
